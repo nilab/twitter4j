@@ -141,7 +141,11 @@ public class AlternativeHttpClientImpl extends HttpClientBase implements HttpRes
 	}
 
 	private RequestBody getRequestBody(HttpRequest req) throws UnsupportedEncodingException {
-		if(HttpParameter.containsFile(req.getParameters())){
+        if (HttpParameter.containsJson(req.getParameters())) {
+            return RequestBody.create(MediaType.parse("application/json"),
+                    HttpParameter.encodeParameters(req.getParameters()).getBytes("UTF-8"));
+        }
+		if (HttpParameter.containsFile(req.getParameters())){
 			final String boundary = "----Twitter4J-upload" + System.currentTimeMillis();
 			MultipartBuilder multipartBuilder = new MultipartBuilder(boundary).type(MultipartBuilder.FORM);
 			for(HttpParameter parameter:req.getParameters()){
